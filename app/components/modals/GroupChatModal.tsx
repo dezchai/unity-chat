@@ -96,7 +96,6 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
                   value: user.id, 
                   label: user.name 
                 }))} 
-                //@ts-ignore
                 onChange={(value) => setValue('members', value, { 
                   shouldValidate: true 
                 })} 
