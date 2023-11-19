@@ -211,4 +211,8 @@ const AuthForm = () => {
   );
 }
  
+<<<<<<< HEAD
 export default AuthForm;
+=======
+export default AuthForm;
+>>>>>>> da928eaa1ee55ea83065f6b492da4599da7a690b
