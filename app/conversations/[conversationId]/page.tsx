@@ -8,15 +8,19 @@ import EmptyState from "@/app/components/EmptyState";
 import { translate } from "@vitalets/google-translate-api";
 import { Message } from "@prisma/client";
 import axios, { isCancel, AxiosError } from "axios";
-
+import getCurrentUser from "@/app/actions/getCurrentUser";
 interface IParams {
   conversationId: string;
 }
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const translateMessage = async (message: any) => {
-  // console.log(process.env.TRANSLATE_API_KEY);
-
+  const currentUser = await getCurrentUser();
+  
+  //@ts-ignore
+  if (message.senderId == currentUser.id) {
+    return message;
+  }
   const response = await axios({
     url: "https://api-free.deepl.com/v2/translate",
     method: "POST",
