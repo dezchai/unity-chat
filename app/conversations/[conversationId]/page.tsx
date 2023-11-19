@@ -5,41 +5,46 @@ import Header from "./components/Header";
 import Body from "./components/Body";
 import Form from "./components/Form";
 import EmptyState from "@/app/components/EmptyState";
+import { translate } from "@vitalets/google-translate-api";
+import { Message } from "@prisma/client";
+import axios, { isCancel, AxiosError } from "axios";
 
 interface IParams {
   conversationId: string;
 }
-const translationClient = new TranslationServiceClient({
-  key: process.env.TRANSLATE_API_KEY,
-});
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-async function translateMessages(
-  messages: Message[],
-  targetLang: string
-): Promise<Message[]> {
-  const requests = messages.map((message) => {
-    if (message.body) {
-      return translationClient
-        .translateText({
-          content: message.body,
-          targetLanguageCode: targetLang,
-          mimeType: "text/plain", // mime types: text/plain, text/html
-        })
-        .then((response) => {
-          const translation = response[0].translations[0].translatedText;
-          return { ...message, body: translation };
-        });
-    } else {
-      return Promise.resolve(message);
-    }
+const translateMessage = async (message: any) => {
+  // console.log(process.env.TRANSLATE_API_KEY);
+
+  const response = await axios({
+    url: "https://api-free.deepl.com/v2/translate",
+    method: "POST",
+    headers: {
+      Authorization: process.env.TRANSLATE_API_KEY,
+    },
+    data: {
+      text: [message.body],
+      target_lang: "zh",
+    },
+  }).catch((err) => {
+    console.log(err);
   });
+  return {
+    ...message,
+    body: response.data.translations[0].text, // Modify this as per your actual property name
+  };
+};
 
-  const translatedMessages = await Promise.all(requests);
-  return translatedMessages;
-}
 const ChatId = async ({ params }: { params: IParams }) => {
   const conversation = await getConversationById(params.conversationId);
-  const messages = await getMessages(params.conversationId);
+  let messages = await getMessages(params.conversationId);
+
+  const translatedMessagesPromises = messages.map(translateMessage);
+
+  // Wait for all the promises to resolve
+  //@ts-ignore
+  messages = await Promise.all(translatedMessagesPromises);
 
   if (!conversation) {
     return (
