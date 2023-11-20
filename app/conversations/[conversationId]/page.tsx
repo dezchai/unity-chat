@@ -18,13 +18,11 @@ import {
 interface IParams {
   conversationId: string;
 }
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const translateMessage = async (message: any) => {
   const currentUser = await getCurrentUser();
   //@ts-ignore
   const targetLanguage = getCookie("language", { cookies }) || "en";
-  console.log(targetLanguage);
   //@ts-ignore
   if (message.senderId == currentUser.id) {
     return message;
