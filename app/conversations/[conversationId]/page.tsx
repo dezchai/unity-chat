@@ -48,14 +48,25 @@ const translateMessage = async (message: any) => {
 
 const ChatId = async ({ params }: { params: IParams }) => {
   const conversation = await getConversationById(params.conversationId);
+  // let messages = await getMessages(params.conversationId);
+
+  // const translatedMessagesPromises = messages.map(translateMessage);
+
+  // messages = await Promise.all(translatedMessagesPromises);
   let messages = await getMessages(params.conversationId);
 
-  const translatedMessagesPromises = messages.map(translateMessage);
+  // Create an array to store the translated messages
+  let translatedMessages = [];
 
-  // Wait for all the promises to resolve
-  //@ts-ignore
-  messages = await Promise.all(translatedMessagesPromises);
+  // Use a for...of loop to iterate over the messages
+  for (let message of messages) {
+    const translatedMessage = await translateMessage(message);
+    translatedMessages.push(translatedMessage);
+  }
 
+  // Use the translated messages
+  messages = translatedMessages;
+  
   if (!conversation) {
     return (
       <div className="lg:pl-80 h-full">
