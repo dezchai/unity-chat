@@ -1,14 +1,20 @@
 import getConversationById from "@/app/actions/getConversationById";
 import getMessages from "@/app/actions/getMessages";
-import { TranslationServiceClient } from "@google-cloud/translate";
 import Header from "./components/Header";
 import Body from "./components/Body";
 import Form from "./components/Form";
 import EmptyState from "@/app/components/EmptyState";
-import { translate } from "@vitalets/google-translate-api";
 import { Message } from "@prisma/client";
 import axios, { isCancel, AxiosError } from "axios";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { cookies } from "next/headers";
+import {
+  setCookie,
+  getCookie,
+  getCookies,
+  deleteCookie,
+  hasCookie,
+} from "cookies-next";
 interface IParams {
   conversationId: string;
 }
@@ -16,7 +22,9 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const translateMessage = async (message: any) => {
   const currentUser = await getCurrentUser();
-  
+  //@ts-ignore
+  const targetLanguage = getCookie("language", { cookies }) || "en";
+  console.log(targetLanguage);
   //@ts-ignore
   if (message.senderId == currentUser.id) {
     return message;
@@ -29,7 +37,7 @@ const translateMessage = async (message: any) => {
     },
     data: {
       text: [message.body],
-      target_lang: "zh",
+      target_lang: targetLanguage,
     },
   }).catch((err) => {
     console.log(err);

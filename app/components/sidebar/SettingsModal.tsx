@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { User } from "@prisma/client";
 import { CldUploadButton } from "next-cloudinary";
-
 import Input from "../inputs/Input";
 import Modal from "../modals/Modal";
 import Button from "../Button";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
+import { setCookie } from "cookies-next";
+import { getCookie } from "cookies-next";
 
 interface SettingsModalProps {
   isOpen?: boolean;
@@ -26,19 +27,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [language, setLanguage] = useState(
-    localStorage.getItem("language") || "en"
-  );
+  const [language, setLanguage] = useState(getCookie("language") || "en");
 
   const handleLanguageChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const newLanguage = event.target.value;
-    localStorage.setItem("language", newLanguage);
+    setCookie("language", newLanguage);
     setLanguage(newLanguage);
   };
-
-  console.log(currentUser, "&TEST_CURRENT_USER");
 
   const {
     register,
@@ -125,10 +122,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   <option value="en">English</option>
                   <option value="es">Spanish</option>
                   <option value="fr">French</option>
-                  <option value="cn">Chinese</option>
-                  <option value="kr">Korean</option>
-                  <option value="jp">Japenese</option>
-                  <option value="ar">Arabic</option>
+                  <option value="de">German</option>
+                  <option value="zh">Chinese</option>
+                  <option value="ko">Korean</option>
+                  <option value="ja">Japenese</option>
                   {/* Add more <option> elements for other supported languages */}
                 </select>
               </div>
