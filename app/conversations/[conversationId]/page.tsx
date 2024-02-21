@@ -4,7 +4,7 @@ import Header from "./components/Header";
 import Body from "./components/Body";
 import Form from "./components/Form";
 import EmptyState from "@/app/components/EmptyState";
-import { Message } from "@prisma/client";
+import { Message } from  "@prisma/client";
 import axios, { isCancel, AxiosError } from "axios";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { cookies } from "next/headers";
@@ -66,7 +66,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
 
   // Use the translated messages
   messages = translatedMessages;
-  
+
   if (!conversation) {
     return (
       <div className="lg:pl-80 h-full">
